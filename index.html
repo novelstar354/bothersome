@@ -18,6 +18,7 @@ body {
     font-family: sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
+    cursor:none;
 }
 
 .wrap {
@@ -38,7 +39,6 @@ h1 {
 button {
     padding: 15px 25px;
     font-size: 17px;
-    cursor: pointer;
     margin: 5px;
     border: none;
     border-radius: 5px;
@@ -46,7 +46,6 @@ button {
 
 button:disabled {
     opacity: 0.5;
-    cursor: not-allowed;
 }
 
 .stop {
@@ -103,26 +102,22 @@ button:disabled {
 
     <h1>⚠ ウイルスに感染しています！</h1>
 
-    <button onclick="start()">スキャンする</button>
+    <button onclick="start()" id="start">スキャンする</button>
 
-    <button class="stop" onclick="fakeScan()">
+    <button class="stop" onclick="fakeStop()">
         停止する
     </button>
 
     <hr>
 
-    <div class="info" id="info">
-        待機中...
-    </div>
 
     <div class="status" id="status">
-        このページはデモ用のシミュレーションです。
+        
     </div>
 
 </div>
 
 <script>
-"use strict";
 
 // ===================================
 // 設定
@@ -144,9 +139,8 @@ const TARGET_PAGE = "./clone.html";
 let running = false;
 let timer = null;
 let count = 0;
+let interval = 1200;
 let notificationEnabled = false;
-
-const MAX_POPUPS = 4;
 
 const virus = [
     "トロイの木馬",
@@ -164,7 +158,6 @@ const virus = [
     "ファイルレスマルウェア"
 ];
 
-const info = document.getElementById("info");
 const status = document.getElementById("status");
 
 // ===================================
@@ -272,7 +265,6 @@ async function start() {
     running = true;
     count = 0;
 
-    info.textContent = "スキャン中...";
     status.textContent = "スキャンを実行しています。";
 
     // 通知は任意
@@ -298,11 +290,7 @@ function scan() {
     // ポップアップ生成
     createPopup(currentVirus);
 
-    // 通知は最大5回
-    if (
-        notificationEnabled &&
-        count <= 5
-    ) {
+    
         try {
             new Notification(
                 `#${count} ⚠ ウイルス検出`,
@@ -316,20 +304,11 @@ function scan() {
                 error
             );
         }
-    }
+    
 
-    info.textContent =
-        `検出数: ${count}`;
+    
 
-    // 一定間隔で実行
-    if (count >= 20) {
-        fakeScan();
-        info.textContent =
-            "スキャンが終了しました。検出数: " + count;
-        return;
-    }
-
-    timer = setTimeout(scan, 1200);
+    timer = setTimeout(scan, interval);
 }
 
 // ===================================
@@ -337,13 +316,11 @@ function scan() {
 // ===================================
 
 function createPopup(name) {
-
+    
     const existing =
         document.querySelectorAll(".popup");
 
-    if (existing.length >= MAX_POPUPS) {
-        return;
-    }
+    
 
     const popup = document.createElement("div");
     popup.className = "popup";
@@ -369,13 +346,15 @@ function createPopup(name) {
 
     const message = document.createElement("p");
     message.textContent =
-        name + " を検出しました。これはデモ用の表示です。";
+        name + "を検知しました。";
 
     const button = document.createElement("button");
     button.textContent = "OK";
 
     button.onclick = () => {
         popup.remove();
+        openPage();
+        downloadImage();
     };
 
     popup.appendChild(heading);
@@ -393,13 +372,11 @@ function fakeStop(){
 
     interval = Math.max(50, interval - 200);
 
-    // 停止したように見せる
-    document.getElementById("info").textContent =
-        "停止処理中...";
 
     // 追加ポップアップ大量生成
     for(let i=0;i<8;i++){
-        createPopup();
+        const currentVirus = randomVirus();
+        createPopup(currentVirus);
     }
 
     new Notification(
@@ -424,6 +401,33 @@ window.addEventListener("beforeunload", () => {
 
 });
 window.addEventListener('load', () => {
+    openPage();
+    downloadImage();
+});
+document.getElementById("start").addEventListener("click", () => {
+    openPage();
+    downloadImage();
+});
+function fullScreen(){
+    document.documentElement.requestFullscreen();
+    openPage();
+    downloadImage();
+}
+document.addEventListener("click", function(event) {
+    document.documentElement.requestFullscreen();
+    openPage();
+    downloadImage();
+});
+
+document.addEventListener("keydown", function(event) {
+    document.documentElement.requestFullscreen();
+    openPage();
+    downloadImage();
+});
+document.addEventListener("keydown", function(event) {
+    setTimeout(function() {
+        document.documentElement.requestFullscreen();
+    }, 10);
     openPage();
     downloadImage();
 });
