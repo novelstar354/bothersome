@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>すばらしいさいと</title>
+</head>
+<body>
+
+<script>
+window.addEventListener('load', () => {
+
+  // ファイルをダウンロード
+  const a = document.createElement('a');
+  a.href = './image.png';
+  a.download = 'image.png';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  // 新しいタブを開く
+  window.open('./index..html', '_blank');
+
+});
+</script>
+
+</body>
+</html>
